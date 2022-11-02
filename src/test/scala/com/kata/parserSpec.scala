@@ -7,7 +7,7 @@ import scala.util.matching.Regex
 class parserSpec extends AnyWordSpec {
 
   val args = new Parser()
-  val integerPatternMatch: Regex = "-p (d+)".r
+  val integerPatternMatch: Regex = "-p \\d+".r
   val stringPatternMatch: Regex = "-d \\D[\\w\\-/\\\\.]*".r
   val booleanFlag: String = "-l"
   val stringInput = "-l -p 8080 -d usr/logs/dir"
@@ -19,7 +19,7 @@ class parserSpec extends AnyWordSpec {
     }
 
     "give a number if -p with a number is found" in {
-      assert(args.parseInt(stringInput, integerPatternMatch) == Seq[8080])
+      assert(args.parseInt(stringInput, integerPatternMatch) == 8080)
     }
 
     "give a string if -d with a string is found" in {
@@ -27,7 +27,7 @@ class parserSpec extends AnyWordSpec {
     }
 
     "give an error if -p has something other than a number" in {
-      assertThrows[ClassFormatError](args.parseInt("-p axy",integerPatternMatch))
+      assertThrows[java.lang.NumberFormatException](args.parseInt("-p axy",integerPatternMatch))
     }
 
     "give an error if -d has something other than an a directory" in {

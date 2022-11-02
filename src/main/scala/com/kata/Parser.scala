@@ -9,7 +9,7 @@ class Parser {
     -p is a integer (porting)
     -d is a string that contains / or \  (directory)
    */
-  val integerPatternMatch: Regex = "-p (d+)".r
+  val integerPatternMatch: Regex = "-p \\d+".r
   val stringPatternMatch: Regex = "-d \\D[\\w\\-/\\\\.]*".r
   val booleanFlag: String = "-l"
 
@@ -17,10 +17,7 @@ class Parser {
     val parsedBooleanValue = parseBool(stringInput, booleanFlag)
     val parsedIntegers = parseInt(stringInput, integerPatternMatch)
     val parsedStrings = parseString(stringInput, stringPatternMatch)
-
-    println(s"Integers: $parsedIntegers")
-
-    println(s"String: $parsedStrings, Boolean: $parsedBooleanValue")
+    println(s"String: $parsedStrings, Boolean: $parsedBooleanValue, Integer: $parsedIntegers")
   }
 
   def parseBool(stringInput: String, flagIndicator: String): Boolean = {
@@ -29,13 +26,18 @@ class Parser {
   }
 
   def parseInt(stringInput: String, intRegex: Regex): Int = {
-    if (stringInput.contains("-p")) intRegex.findFirstIn(stringInput).
+    if (stringInput.contains("-p")) {
+      val numberFound = intRegex.findAllIn(stringInput).mkString
+      numberFound.substring(numberFound.indexOf("p") + 2).toInt
+    }
     else 0
   }
 
   def parseString(stringInput: String, stringRegex: Regex): String = {
-    if (stringInput.contains("-d")) stringRegex.findAllIn(stringInput).mkString("", ",", "")
-    else ""
+    if (stringInput.contains("-d")) {
+      val stringFound = stringRegex.findAllIn(stringInput).mkString
+      stringFound.substring(stringFound.indexOf("d") + 2)
+    } else ""
   }
 }
 
