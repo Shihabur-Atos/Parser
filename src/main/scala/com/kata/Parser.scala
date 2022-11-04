@@ -1,6 +1,7 @@
 package com.kata
 
 import scala.util.matching.Regex
+import scala.util.{Try, Success, Failure}
 
 class Parser {
   /*
@@ -25,32 +26,22 @@ class Parser {
     else false
   }
 
-  def parseInt(stringInput: String, intRegex: Regex): Int = {
+  def parseInt(stringInput: String, intRegex: Regex): Try[Int] = {
     if (stringInput.contains("-p")) {
       val numberFound = intRegex.findAllIn(stringInput).mkString
-      numberFound.substring(numberFound.indexOf("p") + 2).toInt
+      if (numberFound.isBlank) return Failure(new NumberFormatException())
+      else return Success(numberFound.substring(numberFound.indexOf("p") + 2).toInt)
     }
-    else 0
+    Failure(new NumberFormatException())
   }
 
-  def parseString(stringInput: String, stringRegex: Regex): String = {
+  def parseString(stringInput: String, stringRegex: Regex): Try[String] = {
     if (stringInput.contains("-d")) {
       val stringFound = stringRegex.findAllIn(stringInput).mkString
-      stringFound.substring(stringFound.indexOf("d") + 2)
-    } else ""
+      if (stringFound.isBlank) return Failure(new IllegalArgumentException())
+      else return Success(stringFound.substring(stringFound.indexOf("d") + 2))
+    }
+    Failure(new IllegalArgumentException())
   }
 }
-
-/*
-  parseBool(stringInput)
-  val args = stringInput.split("-[l,pd]")
-  args.foreach(x => {
-    if(x.contains('p')) {
-      parseInt(x, integerPatternMatch)
-    }
-    if(x.contains('d')) {
-      parseString(stringInput, stringPatternMatch)
-    }
-  })
- */
 

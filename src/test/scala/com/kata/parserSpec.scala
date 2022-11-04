@@ -1,8 +1,9 @@
 package com.kata
 
 import org.scalatest.wordspec.AnyWordSpec
-
 import scala.util.matching.Regex
+import scala.util.{Try,Success,Failure}
+
 
 class parserSpec extends AnyWordSpec {
 
@@ -19,19 +20,35 @@ class parserSpec extends AnyWordSpec {
     }
 
     "give a number if -p with a number is found" in {
-      assert(args.parseInt(stringInput, integerPatternMatch) == 8080)
+      val result = args.parseInt(stringInput, integerPatternMatch)
+      result match {
+        case Failure(_) => fail("Should succeed!")
+        case Success(result) => assert(result == 8080)
+      }
     }
 
     "give a string if -d with a string is found" in {
-      assert(args.parseString(stringInput, stringPatternMatch).equals("usr/logs/dir"))
+      val result = args.parseString(stringInput, stringPatternMatch)
+      result match {
+        case Failure(_) => fail("Should succeed!")
+        case Success(value) => assert(value.equals("usr/logs/dir"))
+      }
     }
 
     "give an error if -p has something other than a number" in {
-      assertThrows[java.lang.NumberFormatException](args.parseInt("-p axy",integerPatternMatch))
+      val result = args.parseInt("-p axy",integerPatternMatch)
+      result match {
+        case Failure(exception) => assert(exception.isInstanceOf[IllegalArgumentException])
+        case Success(_) => fail("Should fail!")
+      }
     }
 
     "give an error if -d has something other than an a directory" in {
-      assertThrows[ClassFormatError](args.parseString("-d 8asd",stringPatternMatch))
+      val result = args.parseString("-d 8asd",stringPatternMatch)
+      result match {
+        case Failure(exception) => assert(exception.isInstanceOf[RuntimeException])
+        case Success(_) => fail("Should fail!")
+      }
     }
   }
 
